@@ -47,7 +47,7 @@ This project is licensed under the terms of the [MIT license](./LICENSE).
 ```
 @misc{regelum2024,
 author =   {Pavel Osinenko, Grigory Yaremenko, Georgiy Malaniya, Anton Bolychev},
-title =    {Regelum: a framework for hybrid agent-enviroment simulation},
+title =    {Regelum: a framework for simulation, control and reinforcement learning},
 howpublished = {\url{https://github.com/osinekop/regelum-control}},
 year = {2024}
 }
