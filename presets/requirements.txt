@@ -10,7 +10,6 @@ mlflow
 plotly
 torch
 matplotx
-python-pyqt
 pyqt5
 svgpathtools
 svgpath2mpl
