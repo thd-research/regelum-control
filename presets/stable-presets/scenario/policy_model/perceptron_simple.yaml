@@ -1,6 +1,7 @@
 std%%: 0.1
 normalize_output_coef%%: 0.01 
 leaky_relu_slope%%: .2
+# model_path%%: "/home/tcc/huyhoang/regelum-control/regelum_data/outputs/2024-06-28/15-25-49__reinforce_3wrobot_kin/9/.callbacks/PolicyModelSaver/model_it_00019"
 
 _target_: regelum.model.PerceptronWithTruncatedNormalNoise
 dim_input: $ system_specific.dim_observation
@@ -12,3 +13,4 @@ stds: = ${.std%%} * (np.array(${system_specific.action_bounds})[:, 1] - np.array
 output_bounds: $ system_specific.action_bounds 
 is_truncated_to_output_bounds: True
 output_activation: = regelum.model.MultiplyByConstant(${.normalize_output_coef%%})
+# weights: = torch.load("/home/tcc/huyhoang/regelum-control/regelum_data/outputs/2024-06-28/15-25-49__reinforce_3wrobot_kin/9/.callbacks/PolicyModelSaver/model_it_00019")

@@ -17,6 +17,7 @@ callbacks:
   - regelum.callback.PolicyObjectiveSaver
   # - regelum.callback.CalfCallback
   # - regelum.callback.CALFWeightsCallback
+  - src.callback.PolicyModelSaver
 
 
 disallow_uncommitted%%: False

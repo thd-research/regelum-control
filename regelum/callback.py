@@ -1001,14 +1001,14 @@ class CALFWeightsCallback(HistoricalCallback):
         self.cooldown = 0.0
         self.time = 0.0
 
-    def is_target_event(self, obj, method, output):
+    def is_target_event(self, obj, method, output, triggers):
         return (
             isinstance(obj, regelum.scenario.Scenario)
             and method == "compute_action"
             and "calf" in obj.critic.__class__.__name__.lower()
         )
 
-    def perform(self, obj, method, output):
+    def on_function_call(self, obj, method, output):
         try:
             datum = {
                 **{

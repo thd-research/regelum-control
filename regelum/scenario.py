@@ -588,6 +588,7 @@ class RLScenario(Scenario):
             isinstance(optimizable_object, Policy)
             and event == self.policy_optimization_event
         ):
+            print("Run here")
             self.pre_optimize(
                 optimizable_object=optimizable_object,
                 event=event,
