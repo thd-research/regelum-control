@@ -1,10 +1,19 @@
 import torch
-from typing import Union
+from typing import Union, Dict, Any
 from pathlib import Path
-from regelum.callback import HistoricalCallback
+from regelum.callback import HistoricalCallback, ScenarioStepLogger
 from regelum.scenario import RLScenario
-from regelum.critic import Critic
-from regelum.policy import Policy
+from rich.logging import RichHandler
+
+
+class HandlerChecker(ScenarioStepLogger):
+    """A callback which allows to log every step of simulation in a scenario."""
+    def is_target_event(self, obj, method, output, triggers):
+        try:
+            if len(self._metadata["logger"].handlers) == 0:
+                self._metadata["logger"].addHandler(RichHandler())
+        except Exception as err:
+            print("Error:", err)
 
 
 class PolicyModelSaver(HistoricalCallback):

@@ -43,7 +43,9 @@ class BatchSampler(ABC):
         for k in self.keys:
             assert self.len_data_buffer == len(
                 self.data_buffer.data[k]
-            ), "All keys should have the same length in Data Buffer"
+            ), "All keys should have the same length in Data Buffer should {} but {}".format(
+                self.len_data_buffer,
+                len(self.data_buffer.data[k]))
 
     def __iter__(self):
         if self.stop_iteration_criterion():

@@ -33,12 +33,12 @@ class RosTurtlebot(CasADi):
         self.new_state = state_init
     
         # Topics
-        rospy.init_node('ros_preset_node')
+        rospy.init_node('ros_preset_node', log_level=rospy.INFO)
         self.pub_cmd_vel = rospy.Publisher("/cmd_vel", Twist, queue_size=1, latch=False)
         self.sub_odom = rospy.Subscriber("/odom", Odometry, self.odometry_callback)
 
         # ROS 
-        self.RATE = rospy.get_param('/rate', ros_ctrl_rate)
+        self.RATE = rospy.get_param('/rate', int(1/max_step))
         self.lock = threading.Lock()
 
         while not hasattr(self, "new_state"):
@@ -48,14 +48,12 @@ class RosTurtlebot(CasADi):
         self._action = np.expand_dims(self.initialize_init_action(), axis=0)
 
         self.reset()
-        print("init simulator")
 
     def get_velocity(self, msg):
         self.linear_velocity = msg.twist.twist.linear.x
         self.angular_velocity = msg.twist.twist.angular.z
 
     def odometry_callback(self, msg):
-        print("callback simulator")
         self.lock.acquire()
         self.get_velocity(msg)
         # Read current robot state
@@ -131,20 +129,25 @@ class RosTurtlebot(CasADi):
                 time=self.time, state=self.new_state, inputs=self.system.inputs
             )
         
+        self.total_timestamp = int(self.time_final/self.max_step)
         self.rate = rospy.Rate(self.RATE)
         self.episode_start = None
-        subprocess.run(["python3.10", f"{Path(__file__).parent.resolve()}/reset_ros.py"])   
+        subprocess.check_output(["python3.10", f"{Path(__file__).parent.resolve()}/reset_ros.py"])
+        self.receive_action(np.zeros_like(self._action))
 
     # Publish action to gazebo
     def receive_action(self, action):
-        self.system.receive_action(action)
-        self._action = action
-        velocity = Twist()
+        try:
+            self.system.receive_action(action)
+            self._action = action
+            velocity = Twist()
 
-        # Generate ROSmsg from action
-        velocity.linear.x = action[0, 0]
-        velocity.angular.z = action[0, 1]
-        self.pub_cmd_vel.publish(velocity)
+            # Generate ROSmsg from action
+            velocity.linear.x = action[0, 0]
+            velocity.angular.z = action[0, 1]
+            self.pub_cmd_vel.publish(velocity)
+        except Exception as err:
+            print(err)
 
     # Stop condition
     # update time, new_state
@@ -153,20 +156,12 @@ class RosTurtlebot(CasADi):
         Return: -1: episode ended
                 otherwise: episode continues
         '''
-        print("do_sim_step simulator")
         stop_signal = False
 
         stop_signal |= rospy.is_shutdown()
 
-        if self.time >= self.time_final:
-            stop_signal |= True
-            self.receive_action(np.zeros_like(self.action_init))
-        # 
-
-        # if hasattr(self, "_time_measurement"):
-        #     print("It takes:", (time.perf_counter_ns() - self._time_measurement)/1000000)
-
-        # self._time_measurement = time.perf_counter_ns()
+        self.total_timestamp -= 1
+        stop_signal |= self.total_timestamp < 0
 
         self.rate.sleep()
 
