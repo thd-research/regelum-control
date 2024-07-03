@@ -13,6 +13,7 @@ import numpy as np
 import time
 import subprocess
 from pathlib import Path
+import logging
 
 
 class RosTurtlebot(CasADi):
@@ -31,6 +32,7 @@ class RosTurtlebot(CasADi):
         self.rotation_counter = 0
         self.prev_theta = 0
         self.new_state = state_init
+        self.eps = 0.005
     
         # Topics
         rospy.init_node('ros_preset_node', log_level=rospy.INFO)
@@ -46,7 +48,7 @@ class RosTurtlebot(CasADi):
 
         super().__init__(system, self.new_state, action_init, time_final, max_step, first_step, atol, rtol)
         self._action = np.expand_dims(self.initialize_init_action(), axis=0)
-
+        self.loginfo = logging.getLogger("regelum").info
         self.reset()
 
     def get_velocity(self, msg):
@@ -129,11 +131,14 @@ class RosTurtlebot(CasADi):
                 time=self.time, state=self.new_state, inputs=self.system.inputs
             )
         
-        self.total_timestamp = int(self.time_final/self.max_step)
+        self.appox_num_step = np.ceil(self.time_final/self.max_step)
         self.rate = rospy.Rate(self.RATE)
         self.episode_start = None
         subprocess.check_output(["python3.10", f"{Path(__file__).parent.resolve()}/reset_ros.py"])
         self.receive_action(np.zeros_like(self._action))
+
+        if hasattr(self, "_time_measurement"):
+            delattr(self, "_time_measurement")
 
     # Publish action to gazebo
     def receive_action(self, action):
@@ -149,6 +154,14 @@ class RosTurtlebot(CasADi):
         except Exception as err:
             print(err)
 
+    def update_time(self):
+        current_time = rospy.get_time()
+
+        if self.episode_start is None:
+            self.episode_start = current_time
+        
+        self.time = current_time - self.episode_start
+
     # Stop condition
     # update time, new_state
     def do_sim_step(self):
@@ -156,21 +169,24 @@ class RosTurtlebot(CasADi):
         Return: -1: episode ended
                 otherwise: episode continues
         '''
-        stop_signal = False
+        sleep_duration_s = self.max_step
+        conv_ns_to_s = lambda x: x / 10**9
+        if hasattr(self, "_time_measurement"):
+            last_computation_duration = conv_ns_to_s(time.perf_counter_ns() - self._time_measurement)
+            sleep_duration_s = (sleep_duration_s - last_computation_duration)
+        
+        self.update_time()
 
-        stop_signal |= rospy.is_shutdown()
+        if rospy.is_shutdown():
+            raise RuntimeError("Ros shutdowns")
 
-        self.total_timestamp -= 1
-        stop_signal |= self.total_timestamp < 0
+        if sleep_duration_s < 0:
+            self.loginfo(f"computation takes {last_computation_duration}s \n Please increase your sampling time or upgrade computational unit.")
+        else:
+            time.sleep(sleep_duration_s)
 
-        self.rate.sleep()
+        self._time_measurement = time.perf_counter_ns()
 
-        if stop_signal:
-            return -1
-
-        if self.episode_start is None:
-            self.episode_start = rospy.get_time()
-        self.time = rospy.get_time() - self.episode_start
         self.observation = self.get_observation(
                 time=self.time, state=self.new_state, inputs=self.system.inputs
             )

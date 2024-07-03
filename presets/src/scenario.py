@@ -96,3 +96,12 @@ class MyREINFORCE(RLScenario):
                 stopping_criterion=stopping_criterion,
             ),
         )
+
+    def run_episode(self, episode_counter, iteration_counter):
+        self.episode_counter = episode_counter
+        self.iteration_counter = iteration_counter
+        while self.sim_status != "episode_ended":
+            self.sim_status = self.step()
+            
+            if self.step_counter != 0 and self.step_counter % self.simulator.appox_num_step == 0:
+                break
