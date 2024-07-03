@@ -37,6 +37,20 @@ class PolicyModelSaver(HistoricalCallback):
         )
         self.iteration_counter += 1
 
+    def on_episode_done(
+        self,
+        scenario,
+        episode_number,
+        episodes_total,
+        iteration_number,
+        iterations_total,
+    ):
+        identifier = f"Policy_weights_during_episode_{str(iteration_number).zfill(5)}"
+        if not self.data.empty:
+            self.save_plot(identifier)
+            self.insert_column_left("episode", iteration_number)
+            self.dump_and_clear_data(identifier)
+
 
 def save_model(
     cls: Union[PolicyModelSaver],
