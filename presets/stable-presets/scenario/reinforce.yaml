@@ -15,7 +15,9 @@ stopping_criterion: ~ stopping_criterion
 policy_n_epochs: 1
 policy_opt_method: = torch.optim.Adam
 policy_opt_method_kwargs: 
-  lr: 0.1
+  lr:
+    init: 0.01
+    step: 0.01
 
 N_iterations: 200
 N_episodes: 3

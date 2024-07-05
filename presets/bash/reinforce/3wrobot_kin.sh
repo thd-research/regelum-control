@@ -3,9 +3,9 @@ python run_stable.py \
     --jobs=-1 \
     scenario=reinforce \
     system=3wrobot_kin \
-    --experiment=reinforce_3wrobot_kin \
+    --experiment=reinforce_3wrobot_kin_test_hyper \
     scenario.N_episodes=4 \
-        scenario.N_iterations=3000 \
+        scenario.N_iterations=30 \
     scenario.policy_opt_method_kwargs.lr=0.01 \
     scenario.policy_model.n_hidden_layers=2 \
     scenario.policy_model.dim_hidden=15 \
