@@ -154,6 +154,9 @@ class Scenario(RegelumBase):
         self.iteration_counter = iteration_counter
         while self.sim_status != "episode_ended":
             self.sim_status = self.step()
+        
+
+        print("step_counter", self.step_counter)
 
     def step(self):
         if isinstance(self.action_init, AwaitedParameter) and isinstance(
@@ -593,6 +596,8 @@ class RLScenario(Scenario):
                 event=event,
                 time=self.data_buffer.get_latest("time"),
             )
+
+            # print([f"{k}: {self.data_buffer.data[k]}" for k in self.data_buffer.data.keys()])
             optimizable_object.optimize(self.data_buffer)
 
     @apply_callbacks()

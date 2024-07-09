@@ -19,3 +19,4 @@ policy_opt_method_kwargs:
 
 N_iterations: 200
 N_episodes: 3
+checkpoint_path: ""
