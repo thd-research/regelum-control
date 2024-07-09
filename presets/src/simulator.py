@@ -26,13 +26,14 @@ class RosTurtlebot(CasADi):
                  first_step: float | None = 0.000001, 
                  atol: float | None = 0.00001, 
                  rtol: float | None = 0.001,
-                 ros_ctrl_rate: int = 100
+                 stop_if_reach_target: bool = False,
                  ):
         self.state_goal = state_goal
         self.rotation_counter = 0
         self.prev_theta = 0
         self.new_state = state_init
         self.eps = 0.005
+        self.stop_if_reach_target = stop_if_reach_target
     
         # Topics
         rospy.init_node('ros_preset_node', log_level=rospy.INFO)
@@ -145,6 +146,13 @@ class RosTurtlebot(CasADi):
     # Publish action to gazebo
     def receive_action(self, action):
         try:
+            # Check to stop at the target
+            if self.stop_if_reach_target and \
+                np.allclose(self.new_state[0][:2], 
+                            np.zeros_like(self.new_state[0][:2]), 
+                            atol=0.1):
+                action = np.zeros_like(action)
+
             self.system.receive_action(action)
             self._action = action
             velocity = Twist()
