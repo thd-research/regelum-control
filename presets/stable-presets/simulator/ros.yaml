@@ -5,5 +5,4 @@ state_goal: $ initial_conditions.state_goal
 state_init: $ initial_conditions.state_init
 time_final: $ system_specific.time_final
 max_step: $ system_specific.sampling_time
-ros_ctrl_rate: 100
 stop_if_reach_target: false
