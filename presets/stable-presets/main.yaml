@@ -16,7 +16,7 @@ callbacks:
   - regelum.callback.CriticObjectiveSaver
   - regelum.callback.PolicyObjectiveSaver
   # - regelum.callback.CalfCallback
-  # - regelum.callback.CALFWeightsCallback
+  - regelum.callback.CALFWeightsCallback
   - src.callback.PolicyModelSaver
   - src.callback.HandlerChecker
 

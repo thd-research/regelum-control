@@ -1,5 +1,5 @@
-state_init: = numpy.array([5., 5., 3. * numpy.pi / 4.])
-state_goal: = np.array([3, 3, np.pi / 2])
+state_init: = numpy.array([3., 3., 3. * numpy.pi / 4.])
+state_goal: = np.array([3, 3, np.pi])
 
 # state_init: = numpy.array([-8., 0., 0.])
 # action_init: = numpy.ones(${system.dim_action})

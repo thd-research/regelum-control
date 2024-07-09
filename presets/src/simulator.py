@@ -98,6 +98,8 @@ class RosTurtlebot(CasADi):
             
             else:
                 self.rotation_counter += 1
+
+        self.rotation_counter = 0
         
         self.prev_theta = theta
         theta = theta + 2 * np.pi * self.rotation_counter
