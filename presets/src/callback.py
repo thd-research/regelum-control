@@ -2,7 +2,7 @@ import torch
 from typing import Union, Dict, Any
 from pathlib import Path
 from regelum.callback import HistoricalCallback, ScenarioStepLogger
-from regelum.scenario import RLScenario
+from regelum.scenario import RLScenario, REINFORCE
 from rich.logging import RichHandler
 
 
@@ -23,7 +23,7 @@ class PolicyModelSaver(HistoricalCallback):
 
     def is_target_event(self, obj, method, output, triggers):
         if (
-            isinstance(obj, RLScenario)
+            isinstance(obj, REINFORCE)
             and method == "pre_optimize"
         ):
             which, event, time, episode_counter, iteration_counter = output

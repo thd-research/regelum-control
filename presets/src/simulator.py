@@ -48,6 +48,7 @@ class RosTurtlebot(CasADi):
             time.sleep(.1)
 
         super().__init__(system, self.new_state, action_init, time_final, max_step, first_step, atol, rtol)
+        # print("[sim] system bounds:", system.action_bounds)
         self._action = np.expand_dims(self.initialize_init_action(), axis=0)
         self.loginfo = logging.getLogger("regelum").info
         self.reset()

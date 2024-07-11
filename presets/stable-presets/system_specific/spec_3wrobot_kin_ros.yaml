@@ -1,5 +1,5 @@
 name: 3wrobot_kin_ros
-target: regelum.system.ThreeWheeledRobotKinematic
+target: src.system.MyThreeWheeledRobotKinematic
 observer: = regelum.observer.ObserverTrivial()
 # target: regelum.system.ThreeWheeledRobotKinematicWithReference
 # observer: = regelum.observer.ObserverReference([1.0, 2.0, 3.0])
