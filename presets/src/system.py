@@ -4,10 +4,10 @@ from regelum.system import (
 )
 from regelum.animation import DefaultAnimation
 
-from regelum.callback import detach
+from regelum.callback import detach, ThreeWheeledRobotAnimation
 from regelum.system import System   
 
-
+@ThreeWheeledRobotAnimation.attach
 @DefaultAnimation.attach
 @detach
 class MyThreeWheeledRobotKinematic(ThreeWheeledRobotKinematic):
