@@ -2,7 +2,7 @@ import torch
 from typing import Union, Dict, Any
 from pathlib import Path
 from regelum.callback import HistoricalCallback, ScenarioStepLogger
-from regelum.scenario import RLScenario, REINFORCE
+from regelum.scenario import RLScenario, REINFORCE, PPO
 from rich.logging import RichHandler
 
 
@@ -23,7 +23,7 @@ class PolicyModelSaver(HistoricalCallback):
 
     def is_target_event(self, obj, method, output, triggers):
         if (
-            isinstance(obj, REINFORCE)
+            (isinstance(obj, REINFORCE) or isinstance(obj, PPO))
             and method == "pre_optimize"
         ):
             which, event, time, episode_counter, iteration_counter = output
@@ -52,8 +52,44 @@ class PolicyModelSaver(HistoricalCallback):
             self.dump_and_clear_data(identifier)
 
 
+class CriticModelSaver(HistoricalCallback):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.iteration_counter = 1
+
+    def is_target_event(self, obj, method, output, triggers):
+        if (
+            (isinstance(obj, PPO))
+            and method == "pre_optimize"
+        ):
+            which, event, time, episode_counter, iteration_counter = output
+            return which == "Critic"
+
+    def on_function_call(self, obj, method, outputs):
+        save_model(
+            self,
+            torch_nn_module=obj.critic.model,
+            iteration_counter=self.iteration_counter,
+        )
+        self.iteration_counter += 1
+
+    def on_episode_done(
+        self,
+        scenario,
+        episode_number,
+        episodes_total,
+        iteration_number,
+        iterations_total,
+    ):
+        identifier = f"Critic_weights_during_episode_{str(iteration_number).zfill(5)}"
+        if not self.data.empty:
+            self.save_plot(identifier)
+            self.insert_column_left("episode", iteration_number)
+            self.dump_and_clear_data(identifier)
+
+
 def save_model(
-    cls: Union[PolicyModelSaver],
+    cls: Union[PolicyModelSaver, CriticModelSaver],
     torch_nn_module: torch.nn.Module,
     iteration_counter: int,
 ) -> None:

@@ -1,5 +1,5 @@
 defaults:
-  - system: inv_pendulum 
+  - system: inv_pendulum
   - simulator: casadi
   - optional nominal_policy: nominal_${system}
   - stopping_criterion: never #stopping_${system}
@@ -15,10 +15,12 @@ callbacks:
   - regelum.callback.HistoricalDataCallback
   - regelum.callback.CriticObjectiveSaver
   - regelum.callback.PolicyObjectiveSaver
-  # - regelum.callback.CalfCallback
+  - regelum.callback.CalfCallback
   - regelum.callback.CALFWeightsCallback
   - src.callback.PolicyModelSaver
+  - src.callback.CriticModelSaver
   - src.callback.HandlerChecker
+
 
 
 disallow_uncommitted%%: False

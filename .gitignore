@@ -167,7 +167,7 @@ outputs
 multirun
 /docsrc/modules/
 
-*.ipynb
+# *.ipynb
 *mlruns/
 regelum_data/
 *mlruns*

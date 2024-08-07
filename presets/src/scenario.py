@@ -11,8 +11,71 @@ from regelum.simulator import Simulator
 from regelum.observer import Observer
 from regelum.model import (
     PerceptronWithTruncatedNormalNoise,
+    ModelPerceptron
 )
-from regelum.scenario import RLScenario, get_policy_gradient_kwargs, CALF
+from regelum.scenario import RLScenario, get_policy_gradient_kwargs, CALF, PPO
+
+
+class MyPPO(PPO):
+    def __init__(
+        self,
+        policy_model: PerceptronWithTruncatedNormalNoise,
+        critic_model: ModelPerceptron,
+        sampling_time: float,
+        running_objective: RunningObjective,
+        simulator: Simulator,
+        critic_n_epochs: int,
+        policy_n_epochs: int,
+        critic_opt_method_kwargs: Dict[str, Any],
+        policy_opt_method_kwargs: Dict[str, Any],
+        critic_opt_method: Type[torch.optim.Optimizer] = torch.optim.Adam,
+        policy_opt_method: Type[torch.optim.Optimizer] = torch.optim.Adam,
+        running_objective_type: str = "cost",
+        critic_td_n: int = 1,
+        cliprange: float = 0.2,
+        discount_factor: float = 0.7,
+        observer: Optional[Observer] = None,
+        N_episodes: int = 2,
+        N_iterations: int = 100,
+        value_threshold: float = np.inf,
+        stopping_criterion: Optional[Callable[[DataBuffer], bool]] = None,
+        gae_lambda: float = 0.0,
+        is_normalize_advantages: bool = True,
+        device: str = "cpu",
+        entropy_coeff: float = 0.0,
+        policy_checkpoint_path: str = "",
+        critic_checkpoint_path: str = "",
+    ):
+        if len(policy_checkpoint_path) != 0:
+            policy_model.load_state_dict(torch.load(policy_checkpoint_path))
+
+        if len(critic_checkpoint_path) != 0:
+            critic_model.load_state_dict(torch.load(critic_checkpoint_path))
+        
+        super().__init__(policy_model, 
+                         critic_model, 
+                         sampling_time, 
+                         running_objective, 
+                         simulator, 
+                         critic_n_epochs, 
+                         policy_n_epochs, 
+                         critic_opt_method_kwargs, 
+                         policy_opt_method_kwargs, 
+                         critic_opt_method, 
+                         policy_opt_method, 
+                         running_objective_type, 
+                         critic_td_n, 
+                         cliprange, 
+                         discount_factor, 
+                         observer, 
+                         N_episodes, 
+                         N_iterations, 
+                         value_threshold, 
+                         stopping_criterion, 
+                         gae_lambda, 
+                         is_normalize_advantages, 
+                         device, 
+                         entropy_coeff)
 
 
 class MyREINFORCE(RLScenario):

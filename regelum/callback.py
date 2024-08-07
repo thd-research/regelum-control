@@ -906,17 +906,17 @@ class CalfCallback(HistoricalCallback):
     def __init__(self, *args, **kwargs):
         """Initialize an instance of CalfCallback."""
         super().__init__(*args, **kwargs)
-        self.cooldown = 1.0
+        self.cooldown = 0.1
         self.time = 0.0
 
-    def is_target_event(self, obj, method, output):
+    def is_target_event(self, obj, method, output, triggers):
         return (
             isinstance(obj, regelum.scenario.Scenario)
             and method == "compute_action"
             and "calf" in obj.critic.__class__.__name__.lower()
         )
 
-    def perform(self, obj, method, output):
+    def on_function_call(self, obj, method, output):
         current_CALF = obj.critic(
             obj.critic.observation_last_good,
             use_stored_weights=True,
