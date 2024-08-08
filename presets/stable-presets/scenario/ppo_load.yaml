@@ -6,7 +6,18 @@ defaults:
   - critic_model: perceptron
 
 sampling_time: $ system_specific.sampling_time
-running_objective: ~ running_objective
+running_objective:
+  _target_: src.objective.ThreeWheeledRobotCostWithSpot
+  quadratic_model:
+    _target_: regelum.model.ModelQuadLin
+    weights: = numpy.array([10., 20., 1, 0, 0])
+    quad_matrix_type: diagonal
+    is_with_linear_terms: False
+  spot_gain: 100
+  spot_x_center: -0.5
+  spot_y_center: -0.5
+  spot_std: 0.1
+  
 simulator: ~ simulator
 observer: $ system_specific.observer
 running_objective_type: cost

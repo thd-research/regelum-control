@@ -7,13 +7,13 @@
 # CKPT_NAME=model_it_00010
 
 # Checkpoint 3
-DATA_ROOT="/regelum-control/regelum_data/outputs/2024-07-08/21-25-58__reinforce_3wrobot_kin_ros/0"
-CKPT_NAME=model_it_00007
+# DATA_ROOT="/regelum-control/regelum_data/outputs/2024-07-08/21-25-58__reinforce_3wrobot_kin_ros/0"
+# CKPT_NAME=model_it_00007
 
-CKPT_PATH="${DATA_ROOT}/.callbacks/PolicyModelSaver/${CKPT_NAME}"
+# CKPT_PATH="${DATA_ROOT}/.callbacks/PolicyModelSaver/${CKPT_NAME}"
 
-IS_VALIDATION="true"
-# CKPT_PATH=""
+# IS_VALIDATION="true"
+CKPT_PATH=""
 
 python3.10 run_stable.py \
             +seed=6 \
